@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments & Reviews</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .comment-section {
+            margin-top: 20px;
+        }
+        .comment {
+            background-color: #f8f9fa;
+            border-left: 5px solid #007bff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .comment strong {
+            color: #007bff;
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin-left: 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>MediTrack</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="features.html">Features</a></li>
+                    <li><a href="comments.html" class="active">Comments</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="content">
+            <h2>Leave a Comment or Review</h2>
+            <form id="commentForm">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <textarea id="comment" placeholder="Your Comment" rows="4" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+            
+            <div class="comment-section" id="comments">
+                <h3>Comments:</h3>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 MediTrack. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            loadComments();
+        });
+
+        document.getElementById("commentForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let name = document.getElementById("name").value;
+            let comment = document.getElementById("comment").value;
+            if (name && comment) {
+                let commentObj = { name, comment };
+                saveComment(commentObj);
+                displayComment(commentObj);
+                document.getElementById("commentForm").reset();
+            }
+        });
+
+        function saveComment(commentObj) {
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments.push(commentObj);
+            localStorage.setItem("comments", JSON.stringify(comments));
+        }
+
+        function loadComments() {
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments.forEach(commentObj => displayComment(commentObj));
+        }
+
+        function displayComment(commentObj) {
+            let commentSection = document.getElementById("comments");
+            let newComment = document.createElement("div");
+            newComment.classList.add("comment");
+            newComment.innerHTML = `<strong>${commentObj.name}:</strong> <p>${commentObj.comment}</p>`;
+            let deleteBtn = document.createElement("button");
+            deleteBtn.innerText = "X";
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.onclick = function() {
+                deleteComment(commentObj, newComment);
+            };
+            newComment.appendChild(deleteBtn);
+            commentSection.appendChild(newComment);
+        }
+
+        function deleteComment(commentObj, commentElement) {
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments = comments.filter(c => c.name !== commentObj.name || c.comment !== commentObj.comment);
+            localStorage.setItem("comments", JSON.stringify(comments));
+            commentElement.remove();
+        }
+    </script>
+</body>
+</html>
